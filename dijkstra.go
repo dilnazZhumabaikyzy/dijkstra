@@ -3,6 +3,7 @@ package main
 import (
 	"container/heap"
 	"fmt"
+	"strings"
 )
 
 type Node struct {
@@ -143,13 +144,20 @@ func main() {
 	}
 
 	// Run Dijkstra's algorithm
-	startNode := nodes[6]
-	endNode := nodes[7]
+	startNode := nodes[3]
+	endNode := nodes[6]
 	distances, previous := dijkstraParallel(graph, startNode, endNode)
 
 	// Get the shortest path
 	shortestPath := getPath(previous, endNode, locations)
 
-	fmt.Println("Shortest distance:", distances[endNode.val])
-	fmt.Println("Shortest path:", shortestPath)
+	var distanceStrings []string
+	for key, value := range distances {
+		distanceStrings = append(distanceStrings, fmt.Sprintf("%d: %.2f", key, value))
+	}
+	joinedPath := strings.Join(shortestPath, ", ")
+	fmt.Println("Shortest path:", joinedPath)
+
+	fmt.Println("Shortest distances:")
+	fmt.Println(strings.Join(distanceStrings, ", "))
 }
