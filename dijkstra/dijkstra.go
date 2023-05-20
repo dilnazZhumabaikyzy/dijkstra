@@ -2,6 +2,7 @@ package dijkstra
 
 import (
 	"container/heap"
+	"sync"
 )
 
 type Node struct {
@@ -47,6 +48,7 @@ func DijkstraParallel(graph [][]float64, startNode *Node, endNode *Node) (map[in
 	visited := make(map[*Node]bool)
 	distances := make(map[int]float64)
 	previous := make(map[int]*Node)
+	var mutex sync.Mutex // Add a mutex for synchronization
 
 	for i := range graph {
 		distances[i] = float64(1<<63 - 1) // Infinity
@@ -55,19 +57,28 @@ func DijkstraParallel(graph [][]float64, startNode *Node, endNode *Node) (map[in
 
 	var worker func()
 	worker = func() {
-		for queue.Len() > 0 {
+		for {
+			mutex.Lock() // Lock before accessing maps
+			if queue.Len() == 0 {
+				mutex.Unlock() // Unlock if the queue is empty
+				return
+			}
 			node := heap.Pop(&queue).(*Node)
 			if visited[node] {
+				mutex.Unlock() // Unlock if the node has already been visited
 				continue
 			}
 			visited[node] = true
+			mutex.Unlock() // Unlock before iterating over neighbors
 			for _, neighbor := range node.neighbors {
 				distance := distances[node.val] + graph[node.val][neighbor.val]
+				mutex.Lock() // Lock before modifying maps
 				if distance < distances[neighbor.val] {
 					distances[neighbor.val] = distance
 					previous[neighbor.val] = node
 					heap.Push(&queue, neighbor)
 				}
+				mutex.Unlock() // Unlock after modifying maps
 			}
 		}
 	}
