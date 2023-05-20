@@ -72,7 +72,7 @@ func DijkstraParallel(graph [][]float64, startNode *Node, endNode *Node) (map[in
 		}
 	}
 
-	numThreads := 5 // Set number of goroutines
+	numThreads := 4 // Set number of goroutines
 	done := make(chan bool)
 
 	for i := 0; i < numThreads; i++ {
@@ -90,11 +90,13 @@ func DijkstraParallel(graph [][]float64, startNode *Node, endNode *Node) (map[in
 	return distances, previous
 }
 
-func GetPath(previous map[int]*Node, endNode *Node, locations []string) []string {
+func GetPath(previous map[int]*Node, endNode *Node, locations []string) ([]string, []int) {
 	path := make([]string, 0)
+	i := make([]int, 0)
 	currentNode := endNode
 	for currentNode != nil {
 		path = append(path, locations[currentNode.val])
+		i = append(i, currentNode.val)
 		currentNode = previous[currentNode.val]
 	}
 
@@ -103,10 +105,10 @@ func GetPath(previous map[int]*Node, endNode *Node, locations []string) []string
 		path[i], path[j] = path[j], path[i]
 	}
 
-	return path
+	return path, i
 }
 
-func Initialize(start int, end int) ([]string, float64) {
+func Initialize(start int, end int) ([]string, float64, []int) {
 	// Define the graph
 	graph := [][]float64{
 		{0, 3, 5, 6, 2.5, 4, 2, 4, 7, 7},
@@ -147,7 +149,7 @@ func Initialize(start int, end int) ([]string, float64) {
 	distances, previous := DijkstraParallel(graph, startNode, endNode)
 
 	// Get the shortest path
-	shortestPath := GetPath(previous, endNode, locations)
+	shortestPath, myindex := GetPath(previous, endNode, locations)
 
-	return shortestPath, distances[endNode.val]
+	return shortestPath, distances[endNode.val], myindex
 }
