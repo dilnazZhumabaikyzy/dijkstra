@@ -40,7 +40,6 @@ func getPaths(c *gin.Context) {
 	// shortestPath := dijkstra.GetPath(previous, end)
 
 	shortestPath, shortestDistance, myindex := dijkstra.Initialize(start, end)
-
 	response := struct {
 		StartPoint       int      `json:"start"`
 		EndPoint         int      `json:"end"`
