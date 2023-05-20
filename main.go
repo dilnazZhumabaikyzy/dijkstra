@@ -60,5 +60,5 @@ func getPaths(c *gin.Context) {
 func main() {
 	router := gin.Default()
 	router.GET("/shortestpath", getPaths)
-	router.Run("localhost:9090")
-}
+	router.Run("0.0.0.0:8080")
+  }
