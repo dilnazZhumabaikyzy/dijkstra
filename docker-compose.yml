@@ -14,3 +14,10 @@ services:
       - 8080:8080
     volumes:
       - ./front:/app/front
+<<<<<<< HEAD
+=======
+  front:
+    build: ./front
+    ports:
+      - 3000:3000
+>>>>>>> 6a0d62969ab138e69d69bc696d87ced589d198b8
